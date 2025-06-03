@@ -1,0 +1,12 @@
+with
+cte_one as
+(select requester_id as id, count(*) as cnt from RequestAccepted group by requester_id),
+cte_two as
+(select accepter_id as id, count(*) as cnt from RequestAccepted group by accepter_id),
+sum_cte as
+(select * from cte_one
+union all
+select * from cte_two),
+group_cte as
+(select id,sum(cnt) as addition from sum_cte group by id)
+select id, addition as num from group_cte where addition=(select max(addition) from group_cte);
