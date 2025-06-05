@@ -1,0 +1,18 @@
+with
+season_cte as
+(select sale_id, product_id, sale_date, quantity, price, 
+case
+    when month(sale_date) IN (12,1,2) then 'Winter'
+    when month(sale_date) IN (3,4,5) then 'Spring'
+    when month(sale_date) IN (6,7,8) then 'Summer'
+    else 'Fall'
+end as season
+from sales),
+joined_cte as
+(select s.season,p.category,s.quantity,s.price from season_cte s join products p on s.product_id=p.product_id),
+group_cte as
+(select season, category, sum(quantity) as total_quantity, sum(quantity*price) as total_revenue from joined_cte group by season, category order by season),
+final_cte as
+(select season, category, total_quantity, total_revenue, dense_rank() over(partition by season order by total_quantity desc, total_revenue desc) as dr from group_cte)
+select season, category, total_quantity, total_revenue from final_cte where dr=1
+;
