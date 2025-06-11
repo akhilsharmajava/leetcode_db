@@ -7,5 +7,4 @@ joined_cte as
 (select a.user_id, round(a.confirmed_count/b.total_count,2) as confirmation_rate  from
 confirm_cte a join total_cte b
 on a.user_id = b.user_id)
-select a.user_id,coalesce(b.confirmation_rate,0) as confirmation_rate from Signups a left join joined_cte b on a.user_id=b.user_id
-;
+select a.user_id,coalesce(b.confirmation_rate,0) as confirmation_rate from Signups a left join joined_cte b on a.user_id=b.user_id;
